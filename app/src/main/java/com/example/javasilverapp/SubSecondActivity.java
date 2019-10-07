@@ -16,13 +16,24 @@ import java.util.List;
 public class SubSecondActivity extends AppCompatActivity {
     // クイズアプリの基盤
     // 選択肢、問題文、正解方法を取得する
-    int flg = 0;
+    static int flg = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        List<String> list = Arrays.asList(StubQuiz.QUIZ_1.clone());
+        if (flg == 0) {
+            CreateProgram(StubQuiz.QUIZ_1, StubProgramStr.program_1);
+        } else {
+            CreateProgram(StubQuiz.QUIZ_2, StubProgramStr.program_2);
+        }
+    }
+
+    /*
+    設問作成メソッド
+     */
+    private void CreateProgram(String[] quiz, String program) {
+        List<String> list = Arrays.asList(quiz.clone());
         Collections.shuffle(list);
 
         // リニアレイアウトの設定
@@ -39,8 +50,7 @@ public class SubSecondActivity extends AppCompatActivity {
 
         // 問題文設定
         TextView textView = new TextView(this);
-        textView.setText(StubProgramStr.program_1);
-        textView.setId(99);
+        textView.setText(program);
         LinearLayout.LayoutParams textLayoutParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
@@ -71,6 +81,8 @@ public class SubSecondActivity extends AppCompatActivity {
         public void onClick(View v) {
             Button b = (Button) v;
             String buttonText = b.getText().toString();
+
+            // 3問連続正解パターンの問題
             if (buttonText.equals(StubQuiz.QUIZ_1[0])
                     || buttonText.equals(StubQuiz.QUIZ_1[1])
                     || buttonText.equals(StubQuiz.QUIZ_1[4])) {
@@ -79,6 +91,8 @@ public class SubSecondActivity extends AppCompatActivity {
                 // 正解数が3の場合
                 if (flg == 3) {
                     Toast.makeText(SubSecondActivity.this, "正解", Toast.LENGTH_LONG).show();
+                    finish();
+                    startActivity(getIntent());
                 }
             }
         }

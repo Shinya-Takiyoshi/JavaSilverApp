@@ -5,4 +5,6 @@ package com.example.javasilverapp;
  * */
 public class StubProgramStr {
     static final String program_1 = "次のうち、クラス宣言に含めることができるもを選びなさい。(3つ選択)";
+
+    static final String program_2 = "パッケージに関する説明として、正しいものを選びなさい(3つ選択)";
 }
