@@ -1,37 +1,132 @@
 package com.example.javasilverapp;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class SubActivity extends AppCompatActivity {
+    // クイズアプリの基盤
+    // 選択肢、問題文、正解方法を取得する
+    static int flg = 0;
+    static int answerFlg = 0;
+    // ボタンに引数を渡して問題に応じて正解のアクションを変更したい
+    // TODO：共通化するために匿名クラスに引数を渡せるようにしたい。
+    private View.OnClickListener mButtonListener = new View.OnClickListener() {
+        public void onClick(View v) {
+            Button b = (Button) v;
+            String buttonText = b.getText().toString();
+
+            // 3問連続正解パターンの問題
+            if (answerFlg == 0) {
+                if (buttonText.equals(StubQuiz.QUIZ_1[0])
+                        || buttonText.equals(StubQuiz.QUIZ_1[1])
+                        || buttonText.equals(StubQuiz.QUIZ_1[4])) {
+                    b.setEnabled(false);
+                    flg++;
+                    // 正解数が3の場合
+                    if (flg == 3) {
+                        Toast.makeText(SubActivity.this, "正解", Toast.LENGTH_LONG).show();
+                        answerFlg++;
+                        finish();
+                        startActivity(getIntent());
+                    }
+                }
+            } else if (answerFlg == 1) {
+                if (buttonText.equals(StubQuiz.QUIZ_2[0])
+                        || buttonText.equals(StubQuiz.QUIZ_2[2])
+                        || buttonText.equals(StubQuiz.QUIZ_2[3])) {
+                    b.setEnabled(false);
+                    flg++;
+                    // 正解数が3の場合
+                    if (flg == 3) {
+                        Toast.makeText(SubActivity.this, "正解", Toast.LENGTH_LONG).show();
+                        answerFlg++;
+                        finish();
+                        startActivity(getIntent());
+                    }
+                }
+
+            } else {
+                if (buttonText.equals(StubQuiz.QUIZ_3[1])) {
+                    Toast.makeText(SubActivity.this, "正解", Toast.LENGTH_LONG).show();
+                    answerFlg++;
+                    finish();
+                    startActivity(getIntent());
+                }
+            }
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.gamedisplay);
+        flg = 0;
+        // 次の問題の切り替えをどうするか
+        if (answerFlg == 0) {
+            CreateProgram(StubQuiz.QUIZ_1, StubProgramStr.program_1);
+        } else if (answerFlg == 1) {
+            CreateProgram(StubQuiz.QUIZ_2, StubProgramStr.program_2);
+        } else {
+            CreateProgram(StubQuiz.QUIZ_3, StubProgramStr.program_3);
 
-        Button sendButton = findViewById(R.id.startButton2);
-        sendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String data1 = "TEST";
-                Intent intent = new Intent(getApplication(), SubSecondActivity.class);
-                intent.putExtra("EXTRA_DATA", data1);
-                startActivity(intent);
-            }
-        });
-        // SQLiteを使用してDBから試験問題のデータを取得する
-        // 一問の回答アクションを実装する
-        // 回答アクション: [1]戦う　[2]逃げる
-        // 回答後のページ再読み込みで試験問題の再描画
-        // [1]戦うを選んだ場合、試験問題に紐づいた選択肢データを取得する。取得したデータの表示順ははランダムとする
-        // [2]逃げるを選んだ場合、パス成功率(プレーヤーのステータス項目)の計算をする。問題のパスが成功した場合にのみ逃げることができる。
-        // [2]逃げるが失敗した場合、相手のターンになり、攻撃される
-        // [1][2]どちらの処理が終了した場合に、相手のターンに移行する
-        // 制限5ターン内で戦いを終了しない場合、ゲームオーバーとなる
-        // 10問連続正解でクリアとなる。
+        }
     }
 
+    /*
+    設問作成メソッド
+     */
+    private void CreateProgram(String[] quiz, String program) {
+        List<String> list = Arrays.asList(quiz.clone());
+        Collections.shuffle(list);
+
+        // リニアレイアウトの設定
+        LinearLayout layout = new LinearLayout(this);
+        // orientationは垂直方向
+        layout.setOrientation(LinearLayout.VERTICAL);
+
+        // Layoutの横・縦幅の指定
+        layout.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT));
+
+        setContentView(layout);
+
+        // 問題文設定
+        TextView textView = new TextView(this);
+        textView.setText(program);
+        LinearLayout.LayoutParams textLayoutParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        textLayoutParams.weight = 1;
+        textView.setLayoutParams(textLayoutParams);
+        layout.addView(textView);
+        // 選択肢ボタンの設定
+        // 問題数に応じてボタンの数を増減する
+        int i = 0;
+        while (i < list.size()) {
+            Button button = new Button(this);
+            button.setText(list.get(i));
+            button.setId(i);
+            LinearLayout.LayoutParams buttonLayoutParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT);
+            buttonLayoutParams.weight = 1;
+            button.setLayoutParams(buttonLayoutParams);
+            button.setAllCaps(false);
+            layout.addView(button);
+            i++;
+            Log.d("ボタンのID", String.valueOf(button.getId()));
+            button.setOnClickListener(mButtonListener);
+        }
+    }
 }
+
