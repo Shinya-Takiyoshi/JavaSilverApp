@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -17,6 +18,7 @@ public class SubActivity extends AppCompatActivity {
     // クイズアプリの基盤
     // 選択肢、問題文、正解方法を取得する
     static int flg = 0;
+    static int i = 1;
     static int answerFlg = 0;
     // ボタンに引数を渡して問題に応じて正解のアクションを変更したい
     // TODO：共通化するために匿名クラスに引数を渡せるようにしたい。
@@ -30,31 +32,14 @@ public class SubActivity extends AppCompatActivity {
                 if (buttonText.equals(StubQuiz.QUIZ_1[0])
                         || buttonText.equals(StubQuiz.QUIZ_1[1])
                         || buttonText.equals(StubQuiz.QUIZ_1[4])) {
-                    b.setEnabled(false);
-                    flg++;
-                    // 正解数が3の場合
-                    if (flg == 3) {
-                        Toast.makeText(SubActivity.this, "正解", Toast.LENGTH_LONG).show();
-                        answerFlg++;
-                        finish();
-                        startActivity(getIntent());
-                    }
+                    resultAnswer_3(b);
                 }
             } else if (answerFlg == 1) {
                 if (buttonText.equals(StubQuiz.QUIZ_2[0])
                         || buttonText.equals(StubQuiz.QUIZ_2[2])
                         || buttonText.equals(StubQuiz.QUIZ_2[3])) {
-                    b.setEnabled(false);
-                    flg++;
-                    // 正解数が3の場合
-                    if (flg == 3) {
-                        Toast.makeText(SubActivity.this, "正解", Toast.LENGTH_LONG).show();
-                        answerFlg++;
-                        finish();
-                        startActivity(getIntent());
-                    }
+                    resultAnswer_3(b);
                 }
-
             } else {
                 if (buttonText.equals(StubQuiz.QUIZ_3[1])) {
                     Toast.makeText(SubActivity.this, "正解", Toast.LENGTH_LONG).show();
@@ -66,25 +51,49 @@ public class SubActivity extends AppCompatActivity {
         }
     };
 
+    private void resultAnswer_3(Button b) {
+        b.setEnabled(false);
+        flg++;
+        // 正解数が3の場合
+        if (flg == 3) {
+            Toast.makeText(SubActivity.this, "正解", Toast.LENGTH_LONG).show();
+            answerFlg++;
+            finish();
+            startActivity(getIntent());
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         flg = 0;
-        // 次の問題の切り替えをどうするか
-        if (answerFlg == 0) {
-            CreateProgram(StubQuiz.QUIZ_1, StubProgramStr.program_1);
-        } else if (answerFlg == 1) {
-            CreateProgram(StubQuiz.QUIZ_2, StubProgramStr.program_2);
-        } else {
-            CreateProgram(StubQuiz.QUIZ_3, StubProgramStr.program_3);
+        try {
+            // クラスの取得
+            Class<?> quiz = StubQuiz.class;
+            // インスタンスの生成
+            Object objQuiz = quiz.newInstance();
+            Field f = quiz.getDeclaredField("QUIZ_" + String.valueOf(i));
+            f.setAccessible(true);
+            String[] getQuiz = (String[]) f.get(objQuiz);
 
+            Class<?> program = StubProgramStr.class;
+            Object objProgram = program.newInstance();
+            Field fp = program.getDeclaredField("program_" + String.valueOf(i));
+            fp.setAccessible(true);
+            String getProgram = fp.get(objProgram).toString();
+
+            createProgram(getQuiz, getProgram);
+            i++;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
     }
 
     /*
     設問作成メソッド
      */
-    private void CreateProgram(String[] quiz, String program) {
+    private void createProgram(String[] quiz, String program) {
         List<String> list = Arrays.asList(quiz.clone());
         Collections.shuffle(list);
 
