@@ -93,16 +93,16 @@ public class SubActivity extends AppCompatActivity {
         // orientationは垂直方向
         layout.setOrientation(LinearLayout.VERTICAL);
 
-        // Layoutの横・縦幅の指定
+        // Layoutの横・縦幅の指定　android:layout_width　android:layout_height
         layout.setLayoutParams(new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT));
-
         setContentView(layout);
 
         // 問題文設定
         TextView textView = new TextView(this);
         textView.setText(program);
+
         LinearLayout.LayoutParams textLayoutParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
@@ -115,12 +115,19 @@ public class SubActivity extends AppCompatActivity {
         while (i < list.size()) {
             Button button = new Button(this);
             button.setText(list.get(i));
+            // ボタンにIDを設定　android:id
             button.setId(i);
+
+            // Layoutの横・縦幅の指定　android:layout_width　android:layout_height
             LinearLayout.LayoutParams buttonLayoutParams = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.MATCH_PARENT);
+
+            // 均等配置
             buttonLayoutParams.weight = 1;
+
             button.setLayoutParams(buttonLayoutParams);
+            // button.setAllCaps(false)　英語の大文字対策　デフォルトはtrueのため、小文字の文字列が大文字になってしまう。
             button.setAllCaps(false);
             layout.addView(button);
             i++;
