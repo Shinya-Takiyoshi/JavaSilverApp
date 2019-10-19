@@ -18,6 +18,7 @@ import java.util.List;
 public class SubActivity extends AppCompatActivity {
     // クイズアプリの基盤
     // 選択肢、問題文、正解方法を取得する
+
     // ボタンクリックした回数
     static int clickCnt = 0;
     // 次の問題への切り替えフラグ
@@ -26,8 +27,8 @@ public class SubActivity extends AppCompatActivity {
     static StubQuiz stub = new StubQuiz();
     // 選択されたボタンを格納する情報
     static List<String> answerList = new ArrayList<>();
-    // ボタンに引数を渡して問題に応じて正解のアクションを変更したい
-    // TODO：共通化するために匿名クラスに引数を渡せるようにしたい。
+
+    // ボタン押下時の処理
     private View.OnClickListener mButtonListener = new View.OnClickListener() {
         public void onClick(View v) {
             Button b = (Button) v;
@@ -57,12 +58,12 @@ public class SubActivity extends AppCompatActivity {
     // 問題の検証
     private void resultAnswer() {
         int answerFlg = 0;
-        // stub.getSelection()から情報取得
+        // 選択肢情報の取得
         String[] select = stub.getSelection();
+        // 正解情報の取得
         int[] ans = stub.getAnswer();
-        // 回答した答えを検証
+        // 回答の検証
         for (String ansTxt : answerList) {
-            // 選択肢の中で回答した選択肢を
             for (int answerNo : ans) {
                 if (ansTxt == select[answerNo]) {
                     //  回答と正解が一致した場合、正解数を加算する
@@ -71,11 +72,13 @@ public class SubActivity extends AppCompatActivity {
             }
         }
 
+        // 正解判定を行う
         if (answerFlg == stub.getMaxButton()) {
             Toast.makeText(SubActivity.this, "正解", Toast.LENGTH_LONG).show();
         } else {
             Toast.makeText(SubActivity.this, "不正解", Toast.LENGTH_LONG).show();
         }
+        // 一時回答リストの初期化
         answerList.clear();
         // 次の問題へ切り替え
         finish();
@@ -85,18 +88,20 @@ public class SubActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // ボタンクリック数の初期化
         clickCnt = 0;
-        // TODO:問題情報の取得の方法をどうするか
+
         try {
             // クラスの取得
             Class<?> quizInfo = StubQuizInfo.class;
             // インスタンスの生成
             Object objQuiz = quizInfo.newInstance();
-            // メソッド(setStr)の取得
+            // スタブ情報の取得
             Method m = quizInfo.getMethod("CreateQuiz" + String.valueOf(no));
             stub = (StubQuiz) m.invoke(objQuiz);
-
-            createProgram();
+            // 画面情報の作成
+            createLayout();
             no++;
         } catch (Exception e) {
             e.printStackTrace();
@@ -107,7 +112,7 @@ public class SubActivity extends AppCompatActivity {
     /*
     設問作成メソッド
      */
-    private void createProgram() {
+    private void createLayout() {
         List<String> list = Arrays.asList(stub.getSelection().clone());
         Collections.shuffle(list);
 
