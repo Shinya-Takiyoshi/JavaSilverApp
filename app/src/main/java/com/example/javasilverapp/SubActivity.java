@@ -62,14 +62,11 @@ public class SubActivity extends AppCompatActivity {
         int[] ans = stub.getAnswer();
         // 回答した答えを検証
         for (String ansTxt : answerList) {
-            for (String str : select) {
-                if (ansTxt == str) {
-                    for (int answerNo : ans) {
-                        if (ansTxt == select[answerNo]) {
-                            //  回答と正解が一致した場合、正解数を加算する
-                            answerFlg++;
-                        }
-                    }
+            // 選択肢の中で回答した選択肢を
+            for (int answerNo : ans) {
+                if (ansTxt == select[answerNo]) {
+                    //  回答と正解が一致した場合、正解数を加算する
+                    answerFlg++;
                 }
             }
         }
