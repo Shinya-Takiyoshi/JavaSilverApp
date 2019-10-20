@@ -17,9 +17,7 @@ public class MainActivity extends AppCompatActivity {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String data1 = "TEST";
                 Intent intent = new Intent(getApplication(), SubActivity.class);
-                intent.putExtra("EXTRA_DATA", data1);
                 startActivity(intent);
             }
         });

@@ -30,6 +30,7 @@ public class SubActivity extends AppCompatActivity {
     static List<String> answerList = new ArrayList<>();
     //　正解数
     static int answerCnt = 0;
+
     // ボタン押下時の処理
     private View.OnClickListener mButtonListener = new View.OnClickListener() {
         public void onClick(View v) {
@@ -79,6 +80,7 @@ public class SubActivity extends AppCompatActivity {
         // 一時回答リストの初期化
         answerList.clear();
         // 次の問題へ切り替え
+        no++;
         finish();
         startActivity(getIntent());
     }
@@ -100,12 +102,10 @@ public class SubActivity extends AppCompatActivity {
             stub = (StubQuiz) m.invoke(objQuiz);
             // 画面情報の作成
             createLayout();
-            no++;
         } catch (Exception e) {
             e.printStackTrace();
-            // 設問の回答状況を初期化する
             no = 1;
-            // ゲーム終了画面遷移の
+            // ゲーム終了画面遷移
             Intent intent = new Intent(getApplication(), GameEndActivity.class);
             intent.putExtra("EXTRA_DATA", answerCnt);
             startActivity(intent);
