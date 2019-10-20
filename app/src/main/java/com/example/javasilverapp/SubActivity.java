@@ -1,5 +1,6 @@
 package com.example.javasilverapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -27,7 +28,8 @@ public class SubActivity extends AppCompatActivity {
     static StubQuiz stub = new StubQuiz();
     // 選択されたボタンを格納する情報
     static List<String> answerList = new ArrayList<>();
-
+    //　正解数
+    static int answerCnt = 0;
     // ボタン押下時の処理
     private View.OnClickListener mButtonListener = new View.OnClickListener() {
         public void onClick(View v) {
@@ -41,11 +43,6 @@ public class SubActivity extends AppCompatActivity {
 
             // ボタンを押下した回数
             clickCnt++;
-
-            // TODO：実装検討メモ
-            // チェックボックスにしてみる
-            // 正解のボタンを設けてみる
-            // xmlかたあらかじめ正解の情報を取得しておく
 
             // 指定された選択肢分、ボタンの数が押下された場合
             if (stub.getMaxButton() == clickCnt) {
@@ -75,6 +72,7 @@ public class SubActivity extends AppCompatActivity {
         // 正解判定を行う
         if (answerFlg == stub.getMaxButton()) {
             Toast.makeText(SubActivity.this, "正解", Toast.LENGTH_LONG).show();
+            answerCnt++;
         } else {
             Toast.makeText(SubActivity.this, "不正解", Toast.LENGTH_LONG).show();
         }
@@ -105,6 +103,12 @@ public class SubActivity extends AppCompatActivity {
             no++;
         } catch (Exception e) {
             e.printStackTrace();
+            // 設問の回答状況を初期化する
+            no = 1;
+            // ゲーム終了画面遷移の
+            Intent intent = new Intent(getApplication(), GameEndActivity.class);
+            intent.putExtra("EXTRA_DATA", answerCnt);
+            startActivity(intent);
         }
 
     }
