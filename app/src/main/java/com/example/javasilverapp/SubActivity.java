@@ -98,16 +98,18 @@ public class SubActivity extends AppCompatActivity {
             // インスタンスの生成
             Object objQuiz = quizInfo.newInstance();
             // スタブ情報の取得
-            Method m = quizInfo.getMethod("CreateQuiz" + String.valueOf(no));
+            Method m = quizInfo.getMethod("createQuiz" + String.valueOf(no));
             stub = (StubQuiz) m.invoke(objQuiz);
             // 画面情報の作成
             createLayout();
         } catch (Exception e) {
             e.printStackTrace();
             no = 1;
+            int resCnt = answerCnt;
+            answerCnt = 0;
             // ゲーム終了画面遷移
             Intent intent = new Intent(getApplication(), GameEndActivity.class);
-            intent.putExtra("EXTRA_DATA", answerCnt);
+            intent.putExtra("ANSWER_CNT", resCnt);
             startActivity(intent);
         }
 

@@ -15,7 +15,7 @@ public class GameEndActivity extends AppCompatActivity {
         setContentView(R.layout.layout_gameclear);
 
         Intent intent = getIntent();
-        int ansCnt = intent.getIntExtra("EXTRA_DATA", 0);
+        int ansCnt = intent.getIntExtra("ANSWER_CNT", 0);
         TextView textView = findViewById(R.id.answerCount);
         textView.setText(String.valueOf(ansCnt) + "問正解");
 

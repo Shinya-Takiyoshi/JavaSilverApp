@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -21,6 +22,9 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        ImageView titleView = findViewById(R.id.titleView);
+        titleView.setImageResource(R.drawable.javasilver);
         // SQLiteを使用してDBから試験問題のデータを取得する
         // 一問の回答アクションを実装する
         // 回答アクション: [1]戦う　[2]逃げる
