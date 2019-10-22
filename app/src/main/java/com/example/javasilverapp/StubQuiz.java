@@ -1,13 +1,14 @@
 package com.example.javasilverapp;
 
 public class StubQuiz {
-    private String program;
+    private String question;
+    private int questionImage;
     private String[] selection;
     private int maxButton;
     private int[] answer;
 
-    public String getProgram() {
-        return program;
+    public String getQuestion() {
+        return question;
     }
 
     public String[] getSelection() {
@@ -22,8 +23,8 @@ public class StubQuiz {
         return answer;
     }
 
-    public void setProgram(String program) {
-        this.program = program;
+    public void setQuestion(String question) {
+        this.question = question;
     }
 
     public void setSelection(String[] selection) {
@@ -36,5 +37,13 @@ public class StubQuiz {
 
     public void setAnswer(int[] answer) {
         this.answer = answer;
+    }
+
+    public int getQuestionImage() {
+        return questionImage;
+    }
+
+    public void setQuestionImage(int questionImage) {
+        this.questionImage = questionImage;
     }
 }

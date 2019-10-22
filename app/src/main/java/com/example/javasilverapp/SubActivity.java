@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,7 +24,7 @@ public class SubActivity extends AppCompatActivity {
     // ボタンクリックした回数
     static int clickCnt = 0;
     // 次の問題への切り替えフラグ
-    static int no = 1;
+    static int questionNo = 1;
     // 出題情報
     static StubQuiz stub = new StubQuiz();
     // 選択されたボタンを格納する情報
@@ -80,7 +81,7 @@ public class SubActivity extends AppCompatActivity {
         // 一時回答リストの初期化
         answerList.clear();
         // 次の問題へ切り替え
-        no++;
+        questionNo++;
         finish();
         startActivity(getIntent());
     }
@@ -98,13 +99,13 @@ public class SubActivity extends AppCompatActivity {
             // インスタンスの生成
             Object objQuiz = quizInfo.newInstance();
             // スタブ情報の取得
-            Method m = quizInfo.getMethod("createQuiz" + String.valueOf(no));
+            Method m = quizInfo.getMethod("createQuiz" + String.valueOf(questionNo));
             stub = (StubQuiz) m.invoke(objQuiz);
             // 画面情報の作成
             createLayout();
         } catch (Exception e) {
             e.printStackTrace();
-            no = 1;
+            questionNo = 1;
             int resCnt = answerCnt;
             answerCnt = 0;
             // ゲーム終了画面遷移
@@ -133,9 +134,9 @@ public class SubActivity extends AppCompatActivity {
                 LinearLayout.LayoutParams.MATCH_PARENT));
         setContentView(layout);
 
-        // 問題文設定
+        // 問題文設定(文字列追加)
         TextView textView = new TextView(this);
-        textView.setText(stub.getProgram());
+        textView.setText(stub.getQuestion());
 
         LinearLayout.LayoutParams textLayoutParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -143,6 +144,17 @@ public class SubActivity extends AppCompatActivity {
         textLayoutParams.weight = 1;
         textView.setLayoutParams(textLayoutParams);
         layout.addView(textView);
+        // 問題文設定(画像追加)
+        if (stub.getQuestionImage() > 0) {
+            ImageView imageView = new ImageView(this);
+            imageView.setImageResource(stub.getQuestionImage());
+            LinearLayout.LayoutParams imageLayoutParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT);
+            imageLayoutParams.weight = 1;
+            imageView.setLayoutParams(imageLayoutParams);
+            layout.addView(imageView);
+        }
         // 選択肢ボタンの設定
         // 問題数に応じてボタンの数を増減する
         int i = 0;
