@@ -1,8 +1,10 @@
 package com.example.javasilverapp;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -119,6 +121,7 @@ public class SubActivity extends AppCompatActivity {
     /*
     設問作成メソッド
      */
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     private void createLayout() {
         List<String> list = Arrays.asList(stub.getSelection().clone());
         Collections.shuffle(list);

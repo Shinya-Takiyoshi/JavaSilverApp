@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">JavaSilverApp</string>
-    <string name="word">問題を出します</string>
+    <string name="app_name" translatable="false">JavaSilverApp</string>
+    <string name="word" translatable="false">問題を出します</string>
 </resources>

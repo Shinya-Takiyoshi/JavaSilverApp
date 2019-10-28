@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.widget.RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -15,8 +15,8 @@
         android:id="@+id/answerCount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/restartButton"
-        android:layout_alignParentBottom="@id/restartButton"
+        android:layout_below="@+id/restartButton"
+        android:layout_alignParentBottom="@+id/restartButton"
         android:text="◯問正解"
         android:textSize="30sp" />
 
@@ -24,8 +24,8 @@
         android:id="@+id/endViewMsg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/answerCount"
-        android:layout_alignParentBottom="@id/answerCount"
+        android:layout_below="@+id/answerCount"
+        android:layout_alignParentBottom="@+id/answerCount"
         android:text="今日もお疲れ様でした!!"
         android:textSize="30sp" />
 
@@ -33,12 +33,12 @@
         android:id="@+id/endView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/endViewMsg"
-        android:layout_alignParentBottom="@id/endViewMsg"
+        android:layout_below="@+id/endViewMsg"
+        android:layout_alignParentBottom="@+id/endViewMsg"
         android:adjustViewBounds="true"
         android:gravity="left"
         android:maxWidth="300dp"
         android:maxHeight="300dp"
         android:scaleType="fitCenter"
         app:srcCompat="@drawable/endview" />
-</RelativeLayout>
+</android.widget.RelativeLayout>
