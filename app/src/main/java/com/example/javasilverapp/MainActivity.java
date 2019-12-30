@@ -1,20 +1,42 @@
 package com.example.javasilverapp;
 
-import android.content.Intent;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity{
+    private FirebaseAuth mAuth;
+    TextView mStatusTextView;
+    TextView mDetailTextView;
+    EditText mEmailField;
+    EditText mPasswordField;
+
+    private static final String TAG = "EmailPassword";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_emailpassword);
 
-        Button sendButton = findViewById(R.id.startButton);
+        /*Button sendButton = findViewById(R.id.startButton);
+        Button fireBase = findViewById(R.id.fireBase);
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -23,8 +45,53 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        ImageView titleView = findViewById(R.id.titleView);
-        titleView.setImageResource(R.drawable.javasilver);
+        // fireBaseの導通テスト用コード
+        fireBase.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //fbase = FirebaseApp.initializeApp(MainActivity.this);
+                //String msg = "FireBase:" + fbase.getName();
+                //Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(getApplication(), LoginCheckActivity.class);
+                startActivity(intent);
+            }
+        });*/
+
+        //ImageView titleView = findViewById(R.id.titleView);
+        //titleView.setImageResource(R.drawable.javasilver);
+        try {
+            FirebaseOptions options = new FirebaseOptions.Builder().
+                    setApplicationId("1:905709494811:android:a78d7a64bbde1ac5e48ebe").
+                    setApiKey("AIzaSyDaEPTJdPdznOhaTUuZ5cd56cYWvKrr9-Y").build();
+
+            FirebaseApp myApp = FirebaseApp.initializeApp(getApplicationContext(), options, "JavaSilverApp");
+
+            // Initialize Firebase Auth
+            mAuth = FirebaseAuth.getInstance(myApp);
+
+            final Button createAccount =  findViewById(R.id.emailCreateAccountButton);
+            final Button signIn = findViewById(R.id.emailSignInButton);
+             mEmailField = findViewById(R.id.fieldEmail);
+            mPasswordField = findViewById(R.id.fieldPassword);
+            createAccount.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    createAccount(mEmailField.getText().toString(), mPasswordField.getText().toString());
+                }
+            });
+
+            signIn.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    signIn(mEmailField.getText().toString(), mPasswordField.getText().toString());
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        //createAccount(mEmailField.getText().toString(), mPasswordField.getText().toString());
         // SQLiteを使用してDBから試験問題のデータを取得する
         // 一問の回答アクションを実装する
         // 回答アクション: [1]戦う　[2]逃げる
@@ -36,4 +103,116 @@ public class MainActivity extends AppCompatActivity {
         // 制限5ターン内で戦いを終了しない場合、ゲームオーバーとなる
         // 10問連続正解でクリアとなる。
     }
+
+    private void signIn(String email, String password) {
+        Log.d(TAG, "createAccount:" + email);
+        if (!validateForm()) {
+            return;
+        }
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithEmail:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            updateUI(user);
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInWithEmail:failure", task.getException());
+                            Toast.makeText(MainActivity.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                            updateUI(null);
+                        }
+
+                        // ...
+                    }
+                });
+
+    }
+
+    private void createAccount(String email, String password) {
+        Log.d(TAG, "createAccount:" + email);
+        if (!validateForm()) {
+            return;
+        }
+
+
+        // [START create_user_with_email]
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "createUserWithEmail:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            updateUI(user);
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                            Toast.makeText(MainActivity.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                            updateUI(null);
+                        }
+
+                    }
+                });
+        // [END create_user_with_email]
+    }
+
+    private boolean validateForm() {
+        boolean valid = true;
+
+        String email = mEmailField.getText().toString();
+        if (TextUtils.isEmpty(email)) {
+            mEmailField.setError("Required.");
+            valid = false;
+        } else {
+            mEmailField.setError(null);
+        }
+
+        String password = mPasswordField.getText().toString();
+        if (TextUtils.isEmpty(password)) {
+            mPasswordField.setError("Required.");
+            valid = false;
+        } else {
+            mPasswordField.setError(null);
+        }
+        return valid;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        updateUI(currentUser);
+    }
+
+    private void updateUI(FirebaseUser user) {
+
+        if (user != null) {
+            mStatusTextView.setText(getString(R.string.emailpassword_status_fmt,
+                    user.getEmail(), user.isEmailVerified()));
+            mDetailTextView.setText(getString(R.string.firebase_status_fmt, user.getUid()));
+
+            findViewById(R.id.emailPasswordButtons).setVisibility(View.GONE);
+            findViewById(R.id.emailPasswordFields).setVisibility(View.GONE);
+            findViewById(R.id.signedInButtons).setVisibility(View.VISIBLE);
+
+            findViewById(R.id.verifyEmailButton).setEnabled(!user.isEmailVerified());
+        } else {
+            mStatusTextView = findViewById(R.id.titleText);
+            mStatusTextView.setText(R.string.signed_out);
+            mDetailTextView = findViewById(R.id.fieldEmail);
+            mDetailTextView.setText("test");
+
+            findViewById(R.id.emailPasswordButtons).setVisibility(View.VISIBLE);
+            findViewById(R.id.emailPasswordFields).setVisibility(View.VISIBLE);
+            findViewById(R.id.signedInButtons).setVisibility(View.GONE);
+        }
+    }
+
 }
