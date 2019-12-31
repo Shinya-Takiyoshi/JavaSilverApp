@@ -1,11 +1,13 @@
 package com.example.javasilverapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,7 +22,7 @@ import com.google.firebase.auth.FirebaseUser;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     TextView mStatusTextView;
     TextView mDetailTextView;
@@ -61,26 +63,26 @@ public class MainActivity extends AppCompatActivity{
         //titleView.setImageResource(R.drawable.javasilver);
         try {
             FirebaseOptions options = new FirebaseOptions.Builder().
-                    setApplicationId("1:905709494811:android:a78d7a64bbde1ac5e48ebe").
-                    setApiKey("AIzaSyDaEPTJdPdznOhaTUuZ5cd56cYWvKrr9-Y").build();
+                    setApplicationId(getResources().getString(R.string.google_app_id)).
+                    setApiKey(getResources().getString(R.string.google_api_key)).build();
 
             FirebaseApp myApp = FirebaseApp.initializeApp(getApplicationContext(), options, "JavaSilverApp");
 
             // Initialize Firebase Auth
             mAuth = FirebaseAuth.getInstance(myApp);
 
-            final Button createAccount =  findViewById(R.id.emailCreateAccountButton);
+            final Button createAccount = findViewById(R.id.emailCreateAccountButton);
             final Button signIn = findViewById(R.id.emailSignInButton);
-             mEmailField = findViewById(R.id.fieldEmail);
+            mEmailField = findViewById(R.id.fieldEmail);
             mPasswordField = findViewById(R.id.fieldPassword);
-            createAccount.setOnClickListener(new View.OnClickListener(){
+            createAccount.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     createAccount(mEmailField.getText().toString(), mPasswordField.getText().toString());
                 }
             });
 
-            signIn.setOnClickListener(new View.OnClickListener(){
+            signIn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     signIn(mEmailField.getText().toString(), mPasswordField.getText().toString());
@@ -105,7 +107,7 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private void signIn(String email, String password) {
-        Log.d(TAG, "createAccount:" + email);
+        Log.d(TAG, "signIn:" + email);
         if (!validateForm()) {
             return;
         }
@@ -188,11 +190,13 @@ public class MainActivity extends AppCompatActivity{
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        updateUI(currentUser);
+        if(mStatusTextView != null){
+            updateUI(currentUser);
+        }
     }
 
     private void updateUI(FirebaseUser user) {
-
+    // TODO:一度ログイン失敗した状態のログインは成功する。初期ログインは画面情報がないため、成功しない。
         if (user != null) {
             mStatusTextView.setText(getString(R.string.emailpassword_status_fmt,
                     user.getEmail(), user.isEmailVerified()));
@@ -201,8 +205,22 @@ public class MainActivity extends AppCompatActivity{
             findViewById(R.id.emailPasswordButtons).setVisibility(View.GONE);
             findViewById(R.id.emailPasswordFields).setVisibility(View.GONE);
             findViewById(R.id.signedInButtons).setVisibility(View.VISIBLE);
-
             findViewById(R.id.verifyEmailButton).setEnabled(!user.isEmailVerified());
+
+            // アプリのスタート画面
+            setContentView(R.layout.activity_main);
+            ImageView titleView = findViewById(R.id.titleView);
+            titleView.setImageResource(R.drawable.javasilver);
+            Button sendButton = findViewById(R.id.startButton);
+            sendButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getApplication(), SubActivity.class);
+                    startActivity(intent);
+                }
+            });
+
+
         } else {
             mStatusTextView = findViewById(R.id.titleText);
             mStatusTextView.setText(R.string.signed_out);
