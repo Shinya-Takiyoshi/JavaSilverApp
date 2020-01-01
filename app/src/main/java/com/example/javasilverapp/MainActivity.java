@@ -18,12 +18,16 @@ import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
     TextView mStatusTextView;
     TextView mDetailTextView;
     EditText mEmailField;
@@ -62,9 +66,11 @@ public class MainActivity extends AppCompatActivity {
         //ImageView titleView = findViewById(R.id.titleView);
         //titleView.setImageResource(R.drawable.javasilver);
         try {
+
             FirebaseOptions options = new FirebaseOptions.Builder().
                     setApplicationId(getResources().getString(R.string.google_app_id)).
-                    setApiKey(getResources().getString(R.string.google_api_key)).build();
+                    setApiKey(getResources().getString(R.string.google_api_key)).
+                    setDatabaseUrl(getResources().getString(R.string.firebase_database_url)).build();
 
             FirebaseApp myApp = FirebaseApp.initializeApp(getApplicationContext(), options, "JavaSilverApp");
 
@@ -75,6 +81,8 @@ public class MainActivity extends AppCompatActivity {
             final Button signIn = findViewById(R.id.emailSignInButton);
             mEmailField = findViewById(R.id.fieldEmail);
             mPasswordField = findViewById(R.id.fieldPassword);
+
+            // Authentication
             createAccount.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -190,17 +198,17 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(mStatusTextView != null){
+        if (mStatusTextView != null) {
             updateUI(currentUser);
         }
     }
 
     private void updateUI(FirebaseUser user) {
-    // TODO:一度ログイン失敗した状態のログインは成功する。初期ログインは画面情報がないため、成功しない。
+        // TODO:一度ログイン失敗した状態のログインは成功する。初期ログインは画面情報がないため、成功しない。
         if (user != null) {
-            mStatusTextView.setText(getString(R.string.emailpassword_status_fmt,
-                    user.getEmail(), user.isEmailVerified()));
-            mDetailTextView.setText(getString(R.string.firebase_status_fmt, user.getUid()));
+            //mStatusTextView.setText(getString(R.string.emailpassword_status_fmt,
+              //      user.getEmail(), user.isEmailVerified()));
+            //mDetailTextView.setText(getString(R.string.firebase_status_fmt, user.getUid()));
 
             findViewById(R.id.emailPasswordButtons).setVisibility(View.GONE);
             findViewById(R.id.emailPasswordFields).setVisibility(View.GONE);
@@ -217,6 +225,29 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     Intent intent = new Intent(getApplication(), SubActivity.class);
                     startActivity(intent);
+                }
+            });
+
+            // DB取得練習　Cloud Firestore
+            Button testButton = findViewById(R.id.testButton);
+            testButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    FirebaseFirestore.getInstance().collection("quizSelection")
+                            .get()
+                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        for (QueryDocumentSnapshot document : task.getResult()) {
+                                            Log.d(TAG, document.getId() + " => " + document.getData());
+                                        }
+                                    } else {
+                                        Log.w(TAG, "Error getting documents.", task.getException());
+                                    }
+                                }
+                            });
                 }
             });
 
