@@ -23,19 +23,25 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="START"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        tools:layout_editor_absoluteX="170dp"
-        tools:layout_editor_absoluteY="426dp" />
+        app:layout_constraintRight_toRightOf="parent" />
+
     <Button
         android:id="@+id/testButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="FIRE_STORE_TEST"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/startButton"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        tools:layout_editor_absoluteX="170dp"
-        tools:layout_editor_absoluteY="426dp" />
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <Button
+        android:id="@+id/testButton_Storage"
+        android:layout_width="wrap_content"
+        android:layout_height="49dp"
+        android:text="FIRE_STORAGE_TEST"
+        app:layout_constraintTop_toBottomOf="@+id/testButton"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

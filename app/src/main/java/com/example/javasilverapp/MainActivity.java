@@ -12,6 +12,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
@@ -21,13 +23,17 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+import java.io.File;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
-    private FirebaseFirestore db;
     TextView mStatusTextView;
     TextView mDetailTextView;
     EditText mEmailField;
@@ -67,9 +73,13 @@ public class MainActivity extends AppCompatActivity {
         //titleView.setImageResource(R.drawable.javasilver);
         try {
 
+            // Authentication -> setApplicationId,setApiKey
+            // Cloud Storage -> setStorageBucket
+            // Cloud Firestore -> setDatabaseUrl
             FirebaseOptions options = new FirebaseOptions.Builder().
                     setApplicationId(getResources().getString(R.string.google_app_id)).
                     setApiKey(getResources().getString(R.string.google_api_key)).
+                    setStorageBucket(getResources().getString(R.string.google_storage_bucket)).
                     setDatabaseUrl(getResources().getString(R.string.firebase_database_url)).build();
 
             FirebaseApp myApp = FirebaseApp.initializeApp(getApplicationContext(), options, "JavaSilverApp");
@@ -206,9 +216,9 @@ public class MainActivity extends AppCompatActivity {
     private void updateUI(FirebaseUser user) {
         // TODO:一度ログイン失敗した状態のログインは成功する。初期ログインは画面情報がないため、成功しない。
         if (user != null) {
-            //mStatusTextView.setText(getString(R.string.emailpassword_status_fmt,
-              //      user.getEmail(), user.isEmailVerified()));
-            //mDetailTextView.setText(getString(R.string.firebase_status_fmt, user.getUid()));
+            mStatusTextView.setText(getString(R.string.emailpassword_status_fmt,
+                    user.getEmail(), user.isEmailVerified()));
+            mDetailTextView.setText(getString(R.string.firebase_status_fmt, user.getUid()));
 
             findViewById(R.id.emailPasswordButtons).setVisibility(View.GONE);
             findViewById(R.id.emailPasswordFields).setVisibility(View.GONE);
@@ -251,7 +261,40 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
+            // ファイル取得練習　Cloud storage
+            Button testStorage = findViewById(R.id.testButton_Storage);
 
+
+            testStorage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    StorageReference mStorageRef = FirebaseStorage.getInstance().getReference();
+                    final StorageReference fileRef = mStorageRef.child("test画像.png");
+                    try{
+                        File localFile = File.createTempFile("images", "jpg");
+                        fileRef.getFile(localFile)
+                                .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                                    @Override
+                                    public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                        // Successfully downloaded data to local file
+                                        // ...
+                                        Log.d(TAG, "ダウンロード成功");
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception exception) {
+                                // Handle failed download
+                                // ...
+                                Log.d(TAG, "ダウンロード失敗");
+                            }
+                        });
+                    }catch(Exception e){
+                        Log.d(TAG, "ダウンロード例外");
+                    }
+
+
+                }
+            });
         } else {
             mStatusTextView = findViewById(R.id.titleText);
             mStatusTextView.setText(R.string.signed_out);
